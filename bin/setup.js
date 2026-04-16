@@ -30,7 +30,7 @@ const dim = (s) => `${c.dim}${s}${c.reset}`;
 const col = (color, s) => `${c[color]}${s}${c.reset}`;
 
 // ─── Events definition ───────────────────────────────────────────────────────
-const EVENTS = [
+const PRIMARY_EVENTS = [
   {
     key: 'stop',
     label: 'Task completed',
@@ -45,6 +45,16 @@ const EVENTS = [
     example: 'e.g. "Should I delete the old migration file or keep it?"',
     defaultSound: 'ronnie.mp3',
   },
+  {
+    key: 'pr-push',
+    label: 'PR / git push',
+    description: 'Claude pushes code to a remote repository',
+    example: 'e.g. Claude runs "git push origin main" or creates a pull request',
+    defaultSound: 'djkhaled.mp3',
+  },
+];
+
+const SECONDARY_EVENTS = [
   {
     key: 'notification',
     label: 'Notification',
@@ -67,13 +77,6 @@ const EVENTS = [
     defaultSound: 'ronnie.mp3',
   },
   {
-    key: 'pr-push',
-    label: 'PR / git push',
-    description: 'Claude pushes code to a remote repository',
-    example: 'e.g. Claude runs "git push origin main" or creates a pull request',
-    defaultSound: 'djkhaled.mp3',
-  },
-  {
     key: 'error',
     label: 'Error / failed task',
     description: 'A tool exits with a non-zero code or a command fails',
@@ -81,6 +84,8 @@ const EVENTS = [
     defaultSound: '808mafia.mp3',
   },
 ];
+
+const EVENTS = [...PRIMARY_EVENTS, ...SECONDARY_EVENTS];
 
 // ─── Bundled sounds list ─────────────────────────────────────────────────────
 function getBundledSounds() {
@@ -513,8 +518,11 @@ async function main() {
     console.log('');
 
     if (choice === 0) {
-      // Configure each event
-      for (const event of EVENTS) {
+      // ── Primary events ──
+      console.log(b(col('cyan', '\n  Main Events\n')));
+      console.log(dim('  These fire on key moments — when Claude finishes, asks you something, or pushes code.\n'));
+
+      for (const event of PRIMARY_EVENTS) {
         const current = config[event.key] || event.defaultSound;
         const selected = await pickSound(event, current);
 
@@ -525,6 +533,32 @@ async function main() {
           config[event.key] = selected.value;
           console.log(col('green', `  ${event.label}: ${selected.value}\n`));
         }
+      }
+
+      // ── Secondary events ──
+      console.log(b(col('yellow', '\n  Secondary Events\n')));
+      console.log(col('yellow', '  Heads up: configuring these too could turn your room into a Chief Keef music video.\n'));
+      console.log(dim('  These fire on every tool call, notification, and error — it adds up fast.\n'));
+
+      const secondaryOptions = ['Yes, configure secondary events', 'Skip — keep it chill'];
+      const secondaryChoice = await arrowMenu(secondaryOptions);
+      console.log('');
+
+      if (secondaryChoice === 0) {
+        for (const event of SECONDARY_EVENTS) {
+          const current = config[event.key] || event.defaultSound;
+          const selected = await pickSound(event, current);
+
+          if (selected.value === '__none__') {
+            delete config[event.key];
+            console.log(col('gray', `  ${event.label}: disabled\n`));
+          } else {
+            config[event.key] = selected.value;
+            console.log(col('green', `  ${event.label}: ${selected.value}\n`));
+          }
+        }
+      } else {
+        console.log(dim('  Skipped secondary events. You can configure them later.\n'));
       }
 
       // Save config
@@ -550,8 +584,18 @@ async function main() {
       if (Object.keys(config).length === 0) {
         console.log(col('yellow', '  No config found. Run "Configure event sounds" first.'));
       } else {
-        console.log(b('  Current assignments:\n'));
-        for (const event of EVENTS) {
+        console.log(b(col('cyan', '  Main Events:\n')));
+        for (const event of PRIMARY_EVENTS) {
+          const sound = config[event.key];
+          const label = event.label.padEnd(28);
+          if (sound) {
+            console.log(`  ${col('cyan', label)} ${col('green', sound)}`);
+          } else {
+            console.log(`  ${col('cyan', label)} ${dim('(disabled)')}`);
+          }
+        }
+        console.log(b(col('yellow', '\n  Secondary Events:\n')));
+        for (const event of SECONDARY_EVENTS) {
           const sound = config[event.key];
           const label = event.label.padEnd(28);
           if (sound) {
