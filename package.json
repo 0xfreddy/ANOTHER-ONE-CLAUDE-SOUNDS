@@ -1,0 +1,18 @@
+{
+  "name": "claude-sounds",
+  "version": "1.0.0",
+  "description": "Sound notifications for Claude Code events",
+  "bin": {
+    "claude-sounds": "./bin/setup.js"
+  },
+  "scripts": {
+    "setup": "node bin/setup.js",
+    "play": "node bin/play.js"
+  },
+  "dependencies": {
+    "inquirer": "^9.2.12"
+  },
+  "engines": {
+    "node": ">=16"
+  }
+}
