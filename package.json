@@ -1,7 +1,7 @@
 {
   "name": "claude-sounds",
   "version": "1.0.0",
-  "description": "Sound notifications for Claude Code events",
+  "description": "Producer tags for Claude Code — your terminal's hype man",
   "bin": {
     "claude-sounds": "./bin/setup.js"
   },

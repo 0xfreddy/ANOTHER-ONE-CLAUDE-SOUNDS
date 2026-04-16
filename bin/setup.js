@@ -35,43 +35,50 @@ const EVENTS = [
     key: 'stop',
     label: 'Task completed',
     description: 'Claude finishes a task and returns control',
-    defaultSound: 'complete.wav',
+    example: 'e.g. "fix the login bug" — Claude edits files, runs tests, then stops',
+    defaultSound: 'djkhaled.mp3',
   },
   {
     key: 'question',
     label: 'Claude asks a question',
-    description: 'Claude stops and asks for clarification',
-    defaultSound: 'question.wav',
+    description: 'Claude pauses to ask you for input or clarification',
+    example: 'e.g. "Should I delete the old migration file or keep it?"',
+    defaultSound: 'ronnie.mp3',
   },
   {
     key: 'notification',
     label: 'Notification',
-    description: 'Sub-agent done, background task finished',
-    defaultSound: 'notification.wav',
+    description: 'A background job or sub-agent finishes',
+    example: 'e.g. a background agent completes a code review while you keep working',
+    defaultSound: '808mafia.mp3',
   },
   {
     key: 'tool-start',
     label: 'Tool call started',
-    description: 'Any tool (Bash, Read, Edit, etc.) begins',
-    defaultSound: 'tool-start.wav',
+    description: 'Claude begins using a tool (Bash, Read, Edit, Write, etc.)',
+    example: 'e.g. Claude runs "npm test" or reads a file — you hear this as it starts',
+    defaultSound: '808mafia.mp3',
   },
   {
     key: 'tool-end',
     label: 'Tool call finished',
-    description: 'Any tool completes',
-    defaultSound: 'tool-end.wav',
+    description: 'A tool call completes and returns its result',
+    example: 'e.g. "npm test" finishes running and output is returned to Claude',
+    defaultSound: 'ronnie.mp3',
   },
   {
     key: 'pr-push',
     label: 'PR / git push',
-    description: 'A git push command is detected',
-    defaultSound: 'pr-push.wav',
+    description: 'Claude pushes code to a remote repository',
+    example: 'e.g. Claude runs "git push origin main" or creates a pull request',
+    defaultSound: 'djkhaled.mp3',
   },
   {
     key: 'error',
     label: 'Error / failed task',
-    description: 'A tool exits with a non-zero code',
-    defaultSound: 'error.wav',
+    description: 'A tool exits with a non-zero code or a command fails',
+    example: 'e.g. "npm test" fails with 3 broken tests, or a build error occurs',
+    defaultSound: '808mafia.mp3',
   },
 ];
 
@@ -231,7 +238,8 @@ async function pickSound(event, currentSound) {
   const currentIdx = options.findIndex((o) => o.value === currentSound) ?? 0;
 
   console.log(`\n${b(col('cyan', event.label))} — ${dim(event.description)}`);
-  console.log(dim('Use arrow keys to browse. Press P to preview. Enter to select.\n'));
+  if (event.example) console.log(`  ${col('gray', event.example)}`);
+  console.log(dim('\nUse arrow keys to browse. Press P to preview. Enter to select.\n'));
 
   // We'll do a custom loop for preview support
   let idx = Math.max(0, currentIdx);
@@ -473,7 +481,7 @@ function installHooks() {
 async function main() {
   console.clear();
   console.log(b(col('cyan', '  Claude Sounds — Setup Wizard')));
-  console.log(dim('  Assign sounds to Claude Code events\n'));
+  console.log(dim('  Producer tags for your terminal\n'));
 
   // Load existing config
   let config = {};
