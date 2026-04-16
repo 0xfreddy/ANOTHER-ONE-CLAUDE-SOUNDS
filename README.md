@@ -28,7 +28,7 @@ Map any tag to any event. Want DJ Khaled screaming "ANOTHER ONE" every time Clau
 ## Setup
 
 ```bash
-git clone https://github.com/0xfreddy/claude-sounds.git
+git clone https://github.com/0xfreddy/ANOTHER-ONE-CLAUDE-SOUNDS.git
 cd claude-sounds
 npm install
 node bin/setup.js
