@@ -29,7 +29,7 @@ Map any tag to any event. Want DJ Khaled screaming "ANOTHER ONE" every time Clau
 
 ```bash
 git clone https://github.com/0xfreddy/ANOTHER-ONE-CLAUDE-SOUNDS.git
-cd claude-sounds
+cd ANOTHER-ONE-CLAUDE-SOUNDS
 npm install
 node bin/setup.js
 ```
