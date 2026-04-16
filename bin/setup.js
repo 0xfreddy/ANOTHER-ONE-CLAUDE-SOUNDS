@@ -94,6 +94,24 @@ function getBundledSounds() {
     .sort();
 }
 
+function getSoundDuration(filename) {
+  const filePath = path.join(SOUNDS_DIR, filename);
+  try {
+    const output = execFileSync('afinfo', [filePath], { encoding: 'utf8' });
+    const match = output.match(/estimated duration:\s*([\d.]+)/);
+    if (match) {
+      const secs = Math.round(parseFloat(match[1]));
+      return `${secs}s`;
+    }
+  } catch (_) {}
+  return null;
+}
+
+function formatSoundLabel(filename) {
+  const dur = getSoundDuration(filename);
+  return dur ? `${filename}  ${c.gray}(${dur})${c.reset}` : filename;
+}
+
 // ─── Audio player detection ──────────────────────────────────────────────────
 function hasBin(name) {
   try {
@@ -236,7 +254,7 @@ async function arrowMenu(options, selectedIndex = 0) {
 async function pickSound(event, currentSound) {
   const bundled = getBundledSounds();
   const options = [
-    ...bundled.map((f) => ({ label: f, value: f })),
+    ...bundled.map((f) => ({ label: formatSoundLabel(f), value: f })),
     { label: '[ Disable this event ]', value: '__none__' },
   ];
 
@@ -321,6 +339,7 @@ async function previewAllSounds() {
   console.log(`\n${b('  Preview sounds')}`);
   console.log(dim('  Arrow keys to navigate (plays automatically). Enter or Esc to go back.\n'));
 
+  const soundLabels = sounds.map((f) => formatSoundLabel(f));
   let idx = 0;
   let playDebounce = null;
 
@@ -328,7 +347,7 @@ async function previewAllSounds() {
     process.stdout.write('\x1b[?25l');
     for (let j = 0; j < sounds.length; j++) {
       const prefix = j === i ? col('cyan', ' > ') : '   ';
-      const label  = j === i ? b(col('cyan', sounds[j])) : dim(sounds[j]);
+      const label  = j === i ? b(col('cyan', soundLabels[j])) : dim(soundLabels[j]);
       process.stdout.write(`${prefix}${label}\n`);
     }
   };
